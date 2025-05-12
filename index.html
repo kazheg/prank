@@ -68,8 +68,8 @@
             40% { width: 35%; }
             60% { width: 55%; }
             80% { width: 75%; }
-            95% { width: 90%; }
-            100% { width: 98%; }
+            95% { width: 95%; }
+            100% { width: 100%; }
         }
         
         .rocket {
@@ -86,8 +86,8 @@
             40% { left: 35%; }
             60% { left: 55%; }
             80% { left: 75%; }
-            95% { left: 90%; }
-            100% { left: 98%; }
+            95% { left: 95%; }
+            100% { left: 100%; }
         }
         
         .emoji-container {
@@ -132,7 +132,7 @@
             100% { transform: rotateX(0deg); }
         }
         
-        .error-modal {
+        .success-modal {
             display: none;
             position: fixed;
             top: 50%;
@@ -158,14 +158,28 @@
             z-index: 99;
         }
         
-        .shake {
-            animation: shake 0.5s linear;
+        .bounce-in {
+            animation: bounce-in 0.5s ease-out;
         }
         
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        @keyframes bounce-in {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+            70% { transform: translate(-50%, -50%) scale(0.95); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
         
         .pulse {
@@ -224,17 +238,18 @@
     </div>
     
     <div class="emoji-container" id="emoji-container"></div>
+    <div id="confetti-container"></div>
     
     <div class="overlay" id="overlay"></div>
     
-    <div class="error-modal" id="error-modal">
+    <div class="success-modal" id="success-modal">
         <div class="text-center">
-            <div class="text-6xl mb-4">❌</div>
-            <h2 class="text-2xl font-bold text-red-600 mb-3">LỖI UPLOAD!</h2>
-            <p class="text-gray-700 mb-4">File của bạn quá quan trọng nên hệ thống không thể xử lý.</p>
-            <p class="text-gray-700 mb-6">Vui lòng thử lại sau khi bạn đã hoàn thành deadline.</p>
-            <button id="close-error" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full transition-all">
-                Đóng
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="text-2xl font-bold text-green-600 mb-3">UPLOAD THÀNH CÔNG!</h2>
+            <p class="text-gray-700 mb-4">Chúc mừng! Bạn đã nộp deadline đúng hạn.</p>
+            <p class="text-gray-700 mb-6">Giờ bạn có thể thở phào nhẹ nhõm rồi.</p>
+            <button id="close-success" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-full transition-all">
+                Tuyệt vời!
             </button>
         </div>
     </div>
@@ -252,14 +267,16 @@
         ];
         
         const emojis = ["😱", "😰", "🥵", "😵‍💫", "🤯", "⏰", "⚡", "💨"];
+        const successEmojis = ["🎉", "🎊", "🥳", "✨", "👏", "🙌", "😎", "🏆"];
         const loadingText = document.getElementById('loading-text');
         const funnyMessage = document.getElementById('funny-message');
         const percentageText = document.getElementById('percentage');
         const emojiContainer = document.getElementById('emoji-container');
         const progressBar = document.getElementById('progress-bar');
-        const errorModal = document.getElementById('error-modal');
+        const successModal = document.getElementById('success-modal');
         const overlay = document.getElementById('overlay');
-        const closeError = document.getElementById('close-error');
+        const closeSuccess = document.getElementById('close-success');
+        const confettiContainer = document.getElementById('confetti-container');
         
         // Change messages randomly
         setInterval(() => {
@@ -281,20 +298,61 @@
             }, 3000);
         }, 800);
         
+        // Create confetti
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                
+                confettiContainer.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+        
         // Update percentage
         let percentage = 0;
         const updatePercentage = () => {
-            if (percentage < 98) {
+            if (percentage < 100) {
                 percentage += Math.random() * 2;
-                if (percentage > 98) percentage = 98;
+                if (percentage > 100) percentage = 100;
                 percentageText.textContent = Math.floor(percentage) + '%';
                 
-                // Show error at 98%
-                if (Math.floor(percentage) >= 98) {
+                // Show success at 100%
+                if (Math.floor(percentage) >= 100) {
                     setTimeout(() => {
                         overlay.style.display = 'block';
-                        errorModal.style.display = 'block';
-                        errorModal.classList.add('shake');
+                        successModal.style.display = 'block';
+                        successModal.classList.add('bounce-in');
+                        createConfetti();
+                        
+                        // Change emojis to success emojis
+                        emojis.length = 0;
+                        successEmojis.forEach(emoji => emojis.push(emoji));
+                        
+                        // Change messages
+                        funnyMessages.length = 0;
+                        funnyMessages.push(
+                            "Thành công rồi! Bạn thật tuyệt vời!",
+                            "Deadline đã được nộp thành công!",
+                            "Chúc mừng! Bạn đã làm được!",
+                            "Giờ thì đi ăn mừng thôi!",
+                            "Bạn xứng đáng được nghỉ ngơi!"
+                        );
+                        
+                        loadingText.textContent = "UPLOAD THÀNH CÔNG!";
+                        funnyMessage.textContent = "Bạn đã hoàn thành xuất sắc!";
                     }, 1000);
                 }
             }
@@ -302,12 +360,12 @@
         
         setInterval(updatePercentage, 500);
         
-        // Close error modal
-        closeError.addEventListener('click', () => {
+        // Close success modal
+        closeSuccess.addEventListener('click', () => {
             overlay.style.display = 'none';
-            errorModal.style.display = 'none';
+            successModal.style.display = 'none';
             
-            // Reset progress
+            // Reset progress for fun
             percentage = 0;
             progressBar.style.width = '0%';
             setTimeout(() => {
@@ -322,5 +380,5 @@
             }, 10);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e7a39c10fa515e',t:'MTc0NzAyOTAzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e7be2e31462107',t:'MTc0NzAzMDEyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
