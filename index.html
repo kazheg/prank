@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPLOAD DEADLINE SIÊU LƯỢNG GIÁ - HẠN 17H00 NGÀY 18/05/2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%);
+            overflow-x: hidden;
+        }
+        
+        .loading-bar {
+            height: 30px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
+            border-radius: 15px;
+            position: relative;
+            animation: progress 30s ease-in-out forwards;
+            width: 0%;
+        }
+        
+        .loading-stripes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 50px 50px;
+            animation: stripe-animation 2s linear infinite;
+        }
+        
+        @keyframes stripe-animation {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 50px 50px;
+            }
+        }
+        
+        @keyframes progress {
+            0% { width: 0%; }
+            20% { width: 20%; }
+            40% { width: 35%; }
+            60% { width: 55%; }
+            80% { width: 75%; }
+            95% { width: 90%; }
+            100% { width: 98%; }
+        }
+        
+        .rocket {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            transform: translateX(-50%) rotate(45deg);
+            animation: rocket-move 30s ease-in-out forwards;
+        }
+        
+        @keyframes rocket-move {
+            0% { left: 0%; }
+            20% { left: 20%; }
+            40% { left: 35%; }
+            60% { left: 55%; }
+            80% { left: 75%; }
+            95% { left: 90%; }
+            100% { left: 98%; }
+        }
+        
+        .emoji-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .emoji {
+            position: absolute;
+            animation: float-up 3s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes float-up {
+            0% {
+                transform: translateY(20px) scale(0.5);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+        
+        .hourglass {
+            animation: flip 2s infinite;
+            transform-style: preserve-3d;
+            display: inline-block;
+        }
+        
+        @keyframes flip {
+            0% { transform: rotateX(0deg); }
+            50% { transform: rotateX(180deg); }
+            100% { transform: rotateX(0deg); }
+        }
+        
+        .error-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            max-width: 90%;
+            width: 450px;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+        
+        .shake {
+            animation: shake 0.5s linear;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="max-w-3xl w-full mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 text-white drop-shadow-lg">
+            UPLOAD DEADLINE SIÊU LƯỢNG GIÁ
+        </h1>
+        
+        <div class="mb-8 text-xl text-white font-bold drop-shadow-md flex items-center justify-center">
+            <span class="hourglass mr-2 text-2xl">⌛</span>
+            <span>Hạn chót: 17H00 NGÀY 18/05/2025</span>
+        </div>
+        
+        <div class="mb-4 text-xl text-white italic" id="loading-text">
+            "Đang tải sự khẩn cấp..."
+        </div>
+        
+        <div class="loading-bar mb-4">
+            <div class="loading-progress" id="progress-bar">
+                <div class="loading-stripes"></div>
+                <div class="rocket" id="rocket">🚀</div>
+            </div>
+        </div>
+        
+        <div class="text-lg text-white mb-8" id="percentage">0%</div>
+        
+        <div class="flex justify-center space-x-4 mb-8">
+            <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm">
+                <div class="text-4xl mb-2">😅</div>
+                <div class="text-white text-sm">Đang lo lắng</div>
+            </div>
+            <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm">
+                <div class="text-4xl mb-2">🤪</div>
+                <div class="text-white text-sm">Đang hoảng loạn</div>
+            </div>
+            <div class="bg-white bg-opacity-20 p-4 rounded-lg backdrop-blur-sm">
+                <div class="text-4xl mb-2">💦</div>
+                <div class="text-white text-sm">Đổ mồ hôi</div>
+            </div>
+        </div>
+        
+        <div class="text-white text-lg italic" id="funny-message">
+            "Đừng lo lắng, chỉ còn... vô cực phần trăm nữa thôi!"
+        </div>
+    </div>
+    
+    <div class="emoji-container" id="emoji-container"></div>
+    
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="error-modal" id="error-modal">
+        <div class="text-center">
+            <div class="text-6xl mb-4">❌</div>
+            <h2 class="text-2xl font-bold text-red-600 mb-3">LỖI UPLOAD!</h2>
+            <p class="text-gray-700 mb-4">File của bạn quá quan trọng nên hệ thống không thể xử lý.</p>
+            <p class="text-gray-700 mb-6">Vui lòng thử lại sau khi bạn đã hoàn thành deadline.</p>
+            <button id="close-error" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full transition-all">
+                Đóng
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const funnyMessages = [
+            "Đang tải sự khẩn cấp...",
+            "Xin vui lòng chờ trong giây lát (hoặc... có thể lâu hơn).",
+            "Tiến trình tải deadline vĩ đại đang được thực hiện.",
+            "Đừng lo lắng, chỉ còn... vô cực phần trăm nữa thôi!",
+            "Đang tìm kiếm động lực để hoàn thành...",
+            "Đang tải thời gian bổ sung (không có thật)...",
+            "Hệ thống đang cố gắng tìm lý do để gia hạn...",
+            "Đang tải... Mà thôi, đi pha cà phê đã!"
+        ];
+        
+        const emojis = ["😱", "😰", "🥵", "😵‍💫", "🤯", "⏰", "⚡", "💨"];
+        const loadingText = document.getElementById('loading-text');
+        const funnyMessage = document.getElementById('funny-message');
+        const percentageText = document.getElementById('percentage');
+        const emojiContainer = document.getElementById('emoji-container');
+        const progressBar = document.getElementById('progress-bar');
+        const errorModal = document.getElementById('error-modal');
+        const overlay = document.getElementById('overlay');
+        const closeError = document.getElementById('close-error');
+        
+        // Change messages randomly
+        setInterval(() => {
+            loadingText.textContent = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+            funnyMessage.textContent = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+        }, 5000);
+        
+        // Create floating emojis
+        setInterval(() => {
+            const emoji = document.createElement('div');
+            emoji.className = 'emoji';
+            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.left = Math.random() * 100 + '%';
+            emoji.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            emojiContainer.appendChild(emoji);
+            
+            setTimeout(() => {
+                emoji.remove();
+            }, 3000);
+        }, 800);
+        
+        // Update percentage
+        let percentage = 0;
+        const updatePercentage = () => {
+            if (percentage < 98) {
+                percentage += Math.random() * 2;
+                if (percentage > 98) percentage = 98;
+                percentageText.textContent = Math.floor(percentage) + '%';
+                
+                // Show error at 98%
+                if (Math.floor(percentage) >= 98) {
+                    setTimeout(() => {
+                        overlay.style.display = 'block';
+                        errorModal.style.display = 'block';
+                        errorModal.classList.add('shake');
+                    }, 1000);
+                }
+            }
+        };
+        
+        setInterval(updatePercentage, 500);
+        
+        // Close error modal
+        closeError.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            errorModal.style.display = 'none';
+            
+            // Reset progress
+            percentage = 0;
+            progressBar.style.width = '0%';
+            setTimeout(() => {
+                progressBar.style.animation = 'none';
+                setTimeout(() => {
+                    progressBar.style.animation = 'progress 30s ease-in-out forwards';
+                    document.getElementById('rocket').style.animation = 'none';
+                    setTimeout(() => {
+                        document.getElementById('rocket').style.animation = 'rocket-move 30s ease-in-out forwards';
+                    }, 10);
+                }, 10);
+            }, 10);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e7a39c10fa515e',t:'MTc0NzAyOTAzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
